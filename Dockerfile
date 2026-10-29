@@ -2,6 +2,7 @@ FROM node:24.22-trixie-slim AS backend-build
 WORKDIR /opt/app
 
 COPY backend/package*.json ./
+COPY backend/vendor ./vendor
 COPY backend/tsconfig.json ./
 COPY backend/tsconfig.build.json ./
 
