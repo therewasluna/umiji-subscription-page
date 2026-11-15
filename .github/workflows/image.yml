@@ -1,0 +1,63 @@
+# Builds the subscription page image for amd64 and arm64 and pushes it to
+# ghcr.io/therewasluna/umiji-subscription-page.
+name: Subscription page image
+
+on:
+    push:
+        branches: [main, 'ci/**']
+        tags: ['v*']
+    workflow_dispatch:
+
+permissions:
+    contents: read
+    packages: write
+
+concurrency:
+    group: subpage-image-${{ github.ref }}
+    cancel-in-progress: true
+
+jobs:
+    image:
+        runs-on: ubuntu-24.04
+        steps:
+            - uses: actions/checkout@v4
+
+            - uses: actions/setup-node@v4
+              with:
+                  node-version: 24
+
+            # The Dockerfile copies frontend/dist, so it's built first.
+            - name: Build the frontend
+              working-directory: frontend
+              run: |
+                  npm ci --no-audit --no-fund
+                  npm run start:build
+
+            - uses: docker/setup-qemu-action@v3
+            - uses: docker/setup-buildx-action@v3
+
+            - uses: docker/login-action@v3
+              with:
+                  registry: ghcr.io
+                  username: ${{ github.actor }}
+                  password: ${{ secrets.GITHUB_TOKEN }}
+
+            - id: meta
+              uses: docker/metadata-action@v5
+              with:
+                  images: ghcr.io/therewasluna/umiji-subscription-page
+                  tags: |
+                      type=raw,value=latest,enable={{is_default_branch}}
+                      type=ref,event=branch
+                      type=ref,event=tag
+                      type=sha
+
+            - uses: docker/build-push-action@v6
+              with:
+                  context: .
+                  platforms: linux/amd64,linux/arm64
+                  push: true
+                  tags: ${{ steps.meta.outputs.tags }}
+                  labels: ${{ steps.meta.outputs.labels }}
+                  cache-from: type=gha
+                  cache-to: type=gha,mode=max

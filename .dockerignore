@@ -1,0 +1,8 @@
+# Keep secrets and bulky local folders out of the build context. frontend/dist is built
+# before docker build and copied in, so it stays.
+.git
+**/node_modules
+backend/dist
+**/.env
+**/.env.*
+!**/.env.sample
