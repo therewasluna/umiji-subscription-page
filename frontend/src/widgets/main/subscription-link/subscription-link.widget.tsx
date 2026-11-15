@@ -1,3 +1,7 @@
+import { ActionIcon, Button, Stack, Text } from '@mantine/core'
+import { useClipboard } from '@mantine/hooks'
+import { modals } from '@mantine/modals'
+import { notifications } from '@mantine/notifications'
 import {
     IconBrandDiscord,
     IconBrandTelegram,
@@ -6,25 +10,27 @@ import {
     IconLink,
     IconMessageChatbot
 } from '@tabler/icons-react'
-import { ActionIcon, Button, Group, Image, Stack, Text } from '@mantine/core'
-import { notifications } from '@mantine/notifications'
-import { useClipboard } from '@mantine/hooks'
-import { modals } from '@mantine/modals'
-import { renderSVG } from 'uqr'
 
-import { constructSubscriptionUrl } from '@shared/utils/construct-subscription-url'
-import { useSubscription } from '@entities/subscription-info-store'
-import { vibrate } from '@shared/utils/vibrate'
 import { useTranslation } from '@shared/hooks'
+import { QrPlateShared } from '@shared/ui'
+import { constructSubscriptionUrl } from '@shared/utils/construct-subscription-url'
+import { vibrate } from '@shared/utils/vibrate'
 
-import classes from './subscription-link.module.css'
+import { useSubscription } from '@entities/subscription-info-store'
 
 interface IProps {
     hideGetLink: boolean
+    isMobile: boolean
     supportUrl: string
 }
 
-export const SubscriptionLinkWidget = ({ supportUrl, hideGetLink }: IProps) => {
+const SUPPORT_ICONS = {
+    't.me': IconBrandTelegram,
+    'discord.com': IconBrandDiscord,
+    'vk.com': IconBrandVk
+}
+
+export const SubscriptionLinkWidget = ({ supportUrl, hideGetLink, isMobile }: IProps) => {
     const { t, baseTranslations } = useTranslation()
     const subscription = useSubscription()
     const clipboard = useClipboard({ timeout: 10000 })
@@ -43,76 +49,28 @@ export const SubscriptionLinkWidget = ({ supportUrl, hideGetLink }: IProps) => {
         clipboard.copy(subscriptionUrl)
     }
 
-    const renderSupportLink = (supportUrl: string) => {
-        const iconConfig = {
-            't.me': { icon: IconBrandTelegram, color: '#0088cc' },
-            'discord.com': { icon: IconBrandDiscord, color: '#5865F2' },
-            'vk.com': { icon: IconBrandVk, color: '#0077FF' }
-        }
-
-        const matchedPlatform = Object.entries(iconConfig).find(([domain]) =>
-            supportUrl.includes(domain)
-        )
-
-        const { icon: Icon, color } = matchedPlatform
-            ? matchedPlatform[1]
-            : { icon: IconMessageChatbot, color: 'cyan' }
-
-        return (
-            <ActionIcon
-                c={color}
-                component="a"
-                href={supportUrl}
-                radius="md"
-                rel="noopener noreferrer"
-                size="xl"
-                style={{
-                    background: 'rgba(255, 255, 255, 0.02)',
-                    border: '1px solid rgba(255, 255, 255, 0.1)'
-                }}
-                target="_blank"
-                variant="default"
-            >
-                <Icon />
-            </ActionIcon>
-        )
-    }
-
     const handleGetLink = () => {
         vibrate('tap')
 
-        const subscriptionQrCode = renderSVG(subscriptionUrl, {
-            whiteColor: '#161B22',
-            blackColor: '#22d3ee'
-        })
-
         modals.open({
-            centered: true,
             title: t(baseTranslations.getLink),
-            classNames: {
-                content: classes.modalContent,
-                header: classes.modalHeader,
-                title: classes.modalTitle
-            },
             children: (
-                <Stack align="center">
-                    <Image
-                        src={`data:image/svg+xml;utf8,${encodeURIComponent(subscriptionQrCode)}`}
-                        style={{ borderRadius: 'var(--mantine-radius-md)' }}
-                    />
-                    <Text c="white" fw={600} size="lg" ta="center">
-                        {t(baseTranslations.scanQrCode)}
-                    </Text>
-                    <Text c="dimmed" size="sm" ta="center">
-                        {t(baseTranslations.scanQrCodeDescription)}
-                    </Text>
-
+                <Stack align="center" gap="lg">
+                    <QrPlateShared value={subscriptionUrl} />
+                    <Stack gap={4}>
+                        <Text c="white" fw={600} ta="center">
+                            {t(baseTranslations.scanQrCode)}
+                        </Text>
+                        <Text c="dimmed" size="sm" ta="center">
+                            {t(baseTranslations.scanQrCodeDescription)}
+                        </Text>
+                    </Stack>
                     <Button
                         fullWidth
-                        leftSection={<IconCopy />}
+                        leftSection={<IconCopy size={18} />}
                         onClick={handleCopy}
-                        radius="md"
-                        variant="light"
+                        size="md"
+                        variant="filled"
                     >
                         {t(baseTranslations.copyLink)}
                     </Button>
@@ -121,21 +79,45 @@ export const SubscriptionLinkWidget = ({ supportUrl, hideGetLink }: IProps) => {
         })
     }
 
+    const SupportIcon =
+        Object.entries(SUPPORT_ICONS).find(([domain]) => supportUrl.includes(domain))?.[1] ??
+        IconMessageChatbot
+
     return (
-        <Group gap="xs" ml="auto" wrap="nowrap">
-            {!hideGetLink && (
+        <>
+            {!hideGetLink &&
+                (isMobile ? (
+                    <ActionIcon
+                        aria-label={t(baseTranslations.getLink)}
+                        onClick={handleGetLink}
+                        size="xl"
+                        variant="outline"
+                    >
+                        <IconLink size={22} />
+                    </ActionIcon>
+                ) : (
+                    <Button
+                        h={44}
+                        leftSection={<IconLink size={20} />}
+                        onClick={handleGetLink}
+                        variant="outline"
+                    >
+                        {t(baseTranslations.getLink)}
+                    </Button>
+                ))}
+
+            {supportUrl !== '' && (
                 <ActionIcon
-                    className={classes.actionIcon}
-                    onClick={handleGetLink}
-                    radius="md"
+                    aria-label="Support"
+                    component="a"
+                    href={supportUrl}
+                    rel="noopener noreferrer"
                     size="xl"
-                    variant="default"
+                    target="_blank"
                 >
-                    <IconLink />
+                    <SupportIcon size={22} />
                 </ActionIcon>
             )}
-
-            {supportUrl !== '' && renderSupportLink(supportUrl)}
-        </Group>
+        </>
     )
 }

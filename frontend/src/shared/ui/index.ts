@@ -1,4 +1,6 @@
 export * from './loading-screen'
 export * from './page'
-export * from './umiji-logo'
+export * from './qr-plate'
 export * from './theme-icon'
+export * from './tide'
+export * from './umiji-logo'

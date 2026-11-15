@@ -1,0 +1,49 @@
+/* The panel's dialog: a dark sheet with a hairline edge and a faint glow of the main colour at the top. */
+
+.modalContent {
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    background:
+        radial-gradient(120% 160px at 50% 0%, var(--mantine-primary-color-light), transparent),
+        var(--mantine-color-dark-7);
+    box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.04),
+        0 32px 80px -24px rgba(0, 0, 0, 0.85);
+}
+
+.modalHeader {
+    gap: var(--mantine-spacing-sm);
+    min-height: 64px;
+    padding-block: 14px;
+    background: transparent;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.modalTitle {
+    min-width: 0;
+    color: var(--mantine-color-white);
+    font-size: 17px;
+    font-weight: 600;
+    line-height: 1.35;
+}
+
+.modalClose {
+    flex-shrink: 0;
+    border-radius: 10px;
+    color: var(--mantine-color-dark-1);
+    transition:
+        background-color 140ms ease,
+        color 140ms ease;
+}
+
+.modalClose:hover {
+    background: rgba(255, 255, 255, 0.06);
+    color: var(--mantine-color-white);
+}
+
+/* Mantine drops the body's top padding under a header; the header has a divider, so keep it. */
+.modalContent > .modalBody {
+    padding-top: var(--mb-padding);
+    color: var(--mantine-color-dark-0);
+    font-size: var(--mantine-font-size-sm);
+    line-height: 1.6;
+}

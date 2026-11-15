@@ -1,35 +1,32 @@
 import { ThemeIcon } from '@mantine/core'
 
-import { ColorGradientStyle } from '@shared/utils/config-parser'
+import { getIconColor } from '@shared/utils/config-parser'
+
+import classes from './theme-icon.module.css'
 
 interface IProps {
     getIconFromLibrary: (iconKey: string) => string
-    gradientStyle: ColorGradientStyle
     isMobile: boolean
     svgIconColor: string
     svgIconKey: string
 }
+
+/** The panel's icon tile: a quiet neutral square, with colour only in the glyph. */
 export const ThemeIconShared = (props: IProps) => {
-    const { isMobile, svgIconColor, gradientStyle, svgIconKey, getIconFromLibrary } = props
+    const { isMobile, svgIconColor, svgIconKey, getIconFromLibrary } = props
 
     return (
         <ThemeIcon
-            color={svgIconColor}
-            radius="xl"
-            size={isMobile ? 36 : 44}
-            style={{
-                background: gradientStyle.background,
-                border: gradientStyle.border,
-                boxShadow: gradientStyle.boxShadow,
-                flexShrink: 0
-            }}
-            variant="light"
+            radius="md"
+            size={isMobile ? 36 : 40}
+            style={{ color: getIconColor(svgIconColor), flexShrink: 0 }}
+            variant="soft"
         >
             <span
+                className={classes.glyph}
                 dangerouslySetInnerHTML={{
                     __html: getIconFromLibrary(svgIconKey)
                 }}
-                style={{ display: 'flex', alignItems: 'center' }}
             />
         </ThemeIcon>
     )

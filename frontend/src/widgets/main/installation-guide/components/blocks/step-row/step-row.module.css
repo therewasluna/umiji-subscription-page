@@ -1,0 +1,93 @@
+/* The same inline padding as the hero, so the whole page shares one left and one right edge. */
+.step {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    grid-template-areas:
+        'icon title'
+        '.    text'
+        '.    actions';
+    column-gap: 16px;
+    padding: 24px 32px;
+}
+
+.step + .step {
+    border-top: 1px solid rgba(255, 255, 255, 0.07);
+}
+
+.step[data-plain] {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-areas:
+        'title'
+        'text'
+        'actions';
+}
+
+.icon {
+    grid-area: icon;
+}
+
+.title {
+    grid-area: title;
+    align-self: center;
+    word-break: break-word;
+}
+
+.text {
+    grid-area: text;
+    margin-top: 4px;
+    white-space: pre-line;
+}
+
+.actions {
+    grid-area: actions;
+    margin-top: 16px;
+}
+
+/* Wide enough for buttons beside the text, which also keeps the text at a readable width. */
+@media (min-width: 64em) {
+    .step {
+        grid-template-columns: auto minmax(0, 1fr) 336px;
+        /* Tall button stacks stretch the text row, so a title stays beside its icon. */
+        grid-template-rows: auto 1fr;
+        grid-template-areas:
+            'icon title actions'
+            '.    text  actions';
+        column-gap: 16px;
+    }
+
+    .step[data-plain] {
+        grid-template-columns: minmax(0, 1fr) 336px;
+        grid-template-areas:
+            'title actions'
+            'text  actions';
+    }
+
+    .text {
+        margin-top: 0;
+    }
+
+    .actions {
+        margin-top: 0;
+        margin-inline-start: 16px;
+    }
+}
+
+/* A phone gives the width back: text and buttons run from the icon's edge to the card's. */
+@media (max-width: 48em) {
+    .step {
+        grid-template-areas:
+            'icon title'
+            'text text'
+            'actions actions';
+        column-gap: 12px;
+        padding: 20px;
+    }
+
+    .step[data-plain] {
+        padding: 20px;
+    }
+
+    .text {
+        margin-top: 12px;
+    }
+}

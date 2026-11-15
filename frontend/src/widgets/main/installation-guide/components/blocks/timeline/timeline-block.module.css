@@ -1,9 +1,13 @@
-/* Timeline styles */
-.timelineRoot {
-    --tl-line-color: rgba(255, 255, 255, 0.08);
+.timeline {
+    padding: 24px 32px 8px;
+
+    @media (max-width: 48em) {
+        padding: 20px 20px 4px;
+    }
 }
 
 .timelineItem {
+    --tl-line-color: rgba(255, 255, 255, 0.1);
     padding-bottom: var(--mantine-spacing-md);
 }
 
@@ -12,15 +16,9 @@
     border: none !important;
 }
 
-.bulletIconSvg {
+.timelineTitle {
     display: flex;
     align-items: center;
-    justify-content: center;
-    width: 20px;
-    height: 20px;
-}
-
-.bulletIconSvg svg {
-    width: 18px;
-    height: 18px;
+    min-height: 40px;
+    margin-bottom: 0;
 }

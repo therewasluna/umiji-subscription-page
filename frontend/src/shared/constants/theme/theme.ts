@@ -1,16 +1,94 @@
-import { createTheme } from '@mantine/core'
+import { createTheme, DEFAULT_THEME, MantineColorsTuple } from '@mantine/core'
+import {
+    isSubscriptionPageAccentColor,
+    SUBSCRIPTION_PAGE_ACCENT_PALETTES,
+    SUBSCRIPTION_PAGE_DEFAULT_ACCENT_COLOR
+} from '@umiji/subscription-page-types'
 
+import { variantColorResolver } from './colors-resolver'
 import components from './overrides'
 
+const hslToHex = (h: number, s: number, l: number) => {
+    const a = (s / 100) * Math.min(l / 100, 1 - l / 100)
+    const channel = (n: number) => {
+        const k = (n + h / 30) % 12
+        const value = l / 100 - a * Math.max(-1, Math.min(k - 3, 9 - k, 1))
+        return Math.round(value * 255)
+            .toString(16)
+            .padStart(2, '0')
+    }
+    return `#${channel(0)}${channel(8)}${channel(4)}`
+}
+
+// Saturation and lightness of the panel's rose-tinted greys. Only the hue changes per main colour, so
+// every colour gets the same depth and contrast the panel has.
+const DARK_SL = [
+    [20, 86.3],
+    [15, 75.1],
+    [9.1, 59],
+    [8.2, 45.3],
+    [12.1, 27.6],
+    [13.4, 19],
+    [16.4, 13.1],
+    [20, 8.8],
+    [22.6, 6.1],
+    [25, 3.1]
+]
+const GRAY_SL = [
+    [28, 95.1],
+    [20.8, 89.6],
+    [17.4, 82],
+    [14.1, 72.2],
+    [11, 60.8],
+    [8.7, 50.2],
+    [9.7, 40.4],
+    [10, 31.4],
+    [11.1, 22.9],
+    [12.8, 15.3]
+]
+
+const tinted = (scale: number[][], hue: number) =>
+    scale.map(([s, l]) => hslToHex(hue, s, l)) as unknown as MantineColorsTuple
+
+const coral: MantineColorsTuple = [
+    '#FFF1EB',
+    '#FFDCCD',
+    '#FFC1A8',
+    '#FFA684',
+    '#FF9469',
+    '#FF8A5C',
+    '#F87C4C',
+    '#F0703F',
+    '#E8653A',
+    '#C9532C'
+]
+
+// The server writes the broker's main colour onto <html>, so the first paint is already in it.
+const requestedAccent = document.documentElement.dataset.accent
+const { hue, shades } =
+    SUBSCRIPTION_PAGE_ACCENT_PALETTES[
+        isSubscriptionPageAccentColor(requestedAccent)
+            ? requestedAccent
+            : SUBSCRIPTION_PAGE_DEFAULT_ACCENT_COLOR
+    ]
+
+const accent = shades as unknown as MantineColorsTuple
+const dark = tinted(DARK_SL, hue)
+const gray = tinted(GRAY_SL, hue)
+
+export const QR_MODULE_COLOR = dark[9]
+
+document.querySelector('meta[name="theme-color"]')?.setAttribute('content', dark[7])
+
 export const theme = createTheme({
+    variantColorResolver,
     components,
     cursorType: 'pointer',
-    fontFamily:
-        'Montserrat, Vazirmatn, Apple Color Emoji, Noto Sans SC, Twemoji Country Flags, sans-serif',
+    fontFamily: 'var(--font-sans)',
     fontFamilyMonospace: 'Fira Mono, monospace',
     breakpoints: {
-        xs: '25em',
-        sm: '30em',
+        xs: '30em',
+        sm: '40em',
         md: '48em',
         lg: '64em',
         xl: '80em',
@@ -20,78 +98,26 @@ export const theme = createTheme({
     },
     scale: 1,
     fontSmoothing: true,
-    focusRing: 'never',
+    focusRing: 'auto',
     white: '#ffffff',
     black: '#24292f',
     colors: {
-        dark: [
-            '#c9d1d9',
-            '#b1bac4',
-            '#8b949e',
-            '#6e7681',
-            '#484f58',
-            '#30363d',
-            '#21262d',
-            '#161b22',
-            '#0d1117',
-            '#010409'
-        ],
-
-        blue: [
-            '#ddf4ff',
-            '#b6e3ff',
-            '#80ccff',
-            '#54aeff',
-            '#218bff',
-            '#0969da',
-            '#0550ae',
-            '#033d8b',
-            '#0a3069',
-            '#002155'
-        ],
-        green: [
-            '#dafbe1',
-            '#aceebb',
-            '#6fdd8b',
-            '#4ac26b',
-            '#2da44e',
-            '#1a7f37',
-            '#116329',
-            '#044f1e',
-            '#003d16',
-            '#002d11'
-        ],
-        yellow: [
-            '#fff8c5',
-            '#fae17d',
-            '#eac54f',
-            '#d4a72c',
-            '#bf8700',
-            '#9a6700',
-            '#7d4e00',
-            '#633c01',
-            '#4d2d00',
-            '#3b2300'
-        ],
-        orange: [
-            '#fff1e5',
-            '#ffd8b5',
-            '#ffb77c',
-            '#fb8f44',
-            '#e16f24',
-            '#bc4c00',
-            '#953800',
-            '#762c00',
-            '#5c2200',
-            '#471700'
-        ]
+        dark,
+        gray,
+        accent,
+        // Configs name "cyan" for every default icon: it means the page's main colour.
+        cyan: accent,
+        lime: gray,
+        // No yellow in Umiji: warnings use coral, and green joins teal for success.
+        yellow: coral,
+        orange: coral,
+        green: DEFAULT_THEME.colors.teal
     },
     primaryShade: 8,
-    primaryColor: 'cyan',
+    primaryColor: 'accent',
     autoContrast: true,
     luminanceThreshold: 0.3,
     headings: {
-        fontFamily: 'Unbounded, Vazirmatn, Apple Color Emoji, Noto Sans SC, sans-serif',
         fontWeight: '600'
     },
     defaultRadius: 'md'

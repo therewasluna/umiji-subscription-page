@@ -2,9 +2,9 @@ import { Accordion, Group, Stack, Text } from '@mantine/core'
 import { IconChevronDown } from '@tabler/icons-react'
 import { useState } from 'react'
 
-import { getColorGradient, getLocalizedText } from '@shared/utils/config-parser'
-import { vibrate } from '@shared/utils/vibrate'
 import { ThemeIconShared } from '@shared/ui'
+import { getLocalizedText } from '@shared/utils/config-parser'
+import { vibrate } from '@shared/utils/vibrate'
 
 import { IBlockRendererProps } from '../renderer-block.interface'
 import classes from './accordion-block.module.css'
@@ -32,58 +32,46 @@ export const AccordionBlockRenderer = ({
                 vibrate('tap')
                 setOpenedAccordion(value)
             }}
-            radius="lg"
             transitionDuration={200}
             value={openedAccordion}
-            variant="separated"
         >
-            {blocks.map((block, index) => {
-                const gradientStyle = getColorGradient(block.svgIconColor)
-
-                return (
-                    <Accordion.Item key={index} value={String(index)}>
-                        <Accordion.Control>
-                            <Group gap="sm" wrap="nowrap">
-                                <ThemeIconShared
-                                    getIconFromLibrary={getIconFromLibrary}
-                                    gradientStyle={gradientStyle}
-                                    isMobile={isMobile}
-                                    svgIconColor={block.svgIconColor}
-                                    svgIconKey={block.svgIconKey}
-                                />
-                                <Stack gap={2} style={{ flex: 1, minWidth: 0 }}>
-                                    <Text
-                                        c="white"
-                                        dangerouslySetInnerHTML={{
-                                            __html: getLocalizedText(block.title, currentLang)
-                                        }}
-                                        fw={600}
-                                        size={isMobile ? 'sm' : 'md'}
-                                        style={{
-                                            overflow: 'hidden',
-                                            textOverflow: 'ellipsis',
-                                            whiteSpace: 'nowrap'
-                                        }}
-                                    />
-                                </Stack>
-                            </Group>
-                        </Accordion.Control>
-                        <Accordion.Panel>
+            {blocks.map((block, index) => (
+                <Accordion.Item key={index} value={String(index)}>
+                    <Accordion.Control>
+                        <Group gap="md" wrap="nowrap">
+                            <ThemeIconShared
+                                getIconFromLibrary={getIconFromLibrary}
+                                isMobile={isMobile}
+                                svgIconColor={block.svgIconColor}
+                                svgIconKey={block.svgIconKey}
+                            />
                             <Text
-                                c="dimmed"
+                                c="white"
+                                dangerouslySetInnerHTML={{
+                                    __html: getLocalizedText(block.title, currentLang)
+                                }}
+                                fw={600}
+                                style={{ flex: 1, minWidth: 0 }}
+                                truncate
+                            />
+                        </Group>
+                    </Accordion.Control>
+                    <Accordion.Panel>
+                        <Stack gap="sm">
+                            <Text
+                                c="dark.1"
                                 dangerouslySetInnerHTML={{
                                     __html: getLocalizedText(block.description, currentLang)
                                 }}
-                                size={isMobile ? 'xs' : 'sm'}
-                                style={{ lineHeight: 1.7 }}
+                                lh={1.65}
+                                size="sm"
+                                style={{ whiteSpace: 'pre-line' }}
                             />
-                            <Group gap="xs" mt="sm" wrap="wrap">
-                                {renderBlockButtons(block.buttons, 'light')}
-                            </Group>
-                        </Accordion.Panel>
-                    </Accordion.Item>
-                )
-            })}
+                            {renderBlockButtons(block.buttons, 'light')}
+                        </Stack>
+                    </Accordion.Panel>
+                </Accordion.Item>
+            ))}
         </Accordion>
     )
 }

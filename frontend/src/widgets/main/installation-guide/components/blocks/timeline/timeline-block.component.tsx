@@ -1,7 +1,7 @@
 import { Stack, Text, Timeline } from '@mantine/core'
 
-import { getColorGradientSolid, getLocalizedText } from '@shared/utils/config-parser'
 import { ThemeIconShared } from '@shared/ui'
+import { getLocalizedText } from '@shared/utils/config-parser'
 
 import { IBlockRendererProps } from '../renderer-block.interface'
 import classes from './timeline-block.module.css'
@@ -14,26 +14,22 @@ export const TimelineBlockRenderer = ({
     getIconFromLibrary
 }: IBlockRendererProps) => {
     return (
-        <Timeline
-            active={blocks.length}
-            bulletSize={isMobile ? 36 : 44}
-            classNames={{
-                root: classes.timelineRoot,
-                item: classes.timelineItem,
-                itemBullet: classes.timelineItemBullet
-            }}
-            color="cyan"
-            lineWidth={2}
-        >
-            {blocks.map((block, index) => {
-                const gradientStyle = getColorGradientSolid(block.svgIconColor)
-
-                return (
+        <div className={classes.timeline}>
+            <Timeline
+                active={-1}
+                bulletSize={isMobile ? 36 : 40}
+                classNames={{
+                    item: classes.timelineItem,
+                    itemBullet: classes.timelineItemBullet,
+                    itemTitle: classes.timelineTitle
+                }}
+                lineWidth={1}
+            >
+                {blocks.map((block, index) => (
                     <Timeline.Item
                         bullet={
                             <ThemeIconShared
                                 getIconFromLibrary={getIconFromLibrary}
-                                gradientStyle={gradientStyle}
                                 isMobile={isMobile}
                                 svgIconColor={block.svgIconColor}
                                 svgIconKey={block.svgIconKey}
@@ -47,24 +43,24 @@ export const TimelineBlockRenderer = ({
                                     __html: getLocalizedText(block.title, currentLang)
                                 }}
                                 fw={600}
-                                size={isMobile ? 'sm' : 'md'}
                             />
                         }
                     >
-                        <Stack gap="xs">
+                        <Stack gap="sm">
                             <Text
-                                c="dimmed"
+                                c="dark.1"
                                 dangerouslySetInnerHTML={{
                                     __html: getLocalizedText(block.description, currentLang)
                                 }}
-                                size={isMobile ? 'xs' : 'sm'}
-                                style={{ lineHeight: 1.6 }}
+                                lh={1.65}
+                                size="sm"
+                                style={{ whiteSpace: 'pre-line' }}
                             />
                             {renderBlockButtons(block.buttons, 'light')}
                         </Stack>
                     </Timeline.Item>
-                )
-            })}
-        </Timeline>
+                ))}
+            </Timeline>
+        </div>
     )
 }

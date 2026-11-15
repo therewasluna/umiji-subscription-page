@@ -1,19 +1,20 @@
+import { GetSubscriptionInfoByShortUuidCommand } from '@umiji/backend-contract'
 import {
     APP_CONFIG_ROUTE_LEADING_PATH,
     SubscriptionPageRawConfigSchema
 } from '@umiji/subscription-page-types'
-import { GetSubscriptionInfoByShortUuidCommand } from '@umiji/backend-contract'
-import { Outlet } from 'react-router'
-import { useLayoutEffect } from 'react'
 import consola from 'consola/browser'
 import { ofetch } from 'ofetch'
+import { useLayoutEffect } from 'react'
+import { Outlet } from 'react-router'
 
+import { LoadingScreen } from '@shared/ui'
+
+import { useAppConfigStoreActions, useIsConfigLoaded } from '@entities/app-config-store'
 import {
     useSubscriptionInfoStoreActions,
     useSubscriptionInfoStoreInfo
 } from '@entities/subscription-info-store'
-import { useAppConfigStoreActions, useIsConfigLoaded } from '@entities/app-config-store'
-import { LoadingScreen } from '@shared/ui'
 
 import classes from './root.module.css'
 
@@ -73,27 +74,9 @@ export function RootLayout() {
         fetchConfig()
     }, [])
 
-    if (!isConfigLoaded || !subscription) {
-        return (
-            <div className={classes.root}>
-                <div className="animated-background"></div>
-                <div className={classes.content}>
-                    <main className={classes.main}>
-                        <LoadingScreen height="100vh" />
-                    </main>
-                </div>
-            </div>
-        )
-    }
-
     return (
-        <div className={classes.root}>
-            <div className="animated-background"></div>
-            <div className={classes.content}>
-                <main className={classes.main}>
-                    <Outlet />
-                </main>
-            </div>
-        </div>
+        <main className={classes.root}>
+            {!isConfigLoaded || !subscription ? <LoadingScreen height="100vh" /> : <Outlet />}
+        </main>
     )
 }

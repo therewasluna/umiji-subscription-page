@@ -9,6 +9,18 @@ see its `DEPLOY.md`). To only build the image (needs Docker and Node 24+): `./to
 Leave `SUBPAGE_CONFIG_UUID` unset (or at the all-zero default): if it points at one config, every user gets that
 page and brokers' pages are never used.
 
+### Development
+
+No image build needed. It needs the panel running, and `backend/.env` with `APP_PORT=3010`, `UMIJI_PANEL_URL`,
+`UMIJI_API_TOKEN`, `INTERNAL_JWT_SECRET` and `TRUST_PROXY=1`.
+
+```
+cd backend  && mkdir -p dev_frontend/assets && ln -sf ../../frontend/index.html dev_frontend/index.html && npm run dev
+cd frontend && npm run start:dev
+```
+
+Open `http://127.0.0.1:3334/<shortUuid>`: it shows that user's real data, and edits to the page appear live.
+
 ### Live config updates
 
 The page re-reads configs from the panel: each one is cached for 2 seconds, unknown ones are fetched on first

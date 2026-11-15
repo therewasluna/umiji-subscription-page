@@ -1,29 +1,15 @@
-import loadingOverlay from './loading-overlay'
-import ringProgress from './ring-progress'
-import notification from './notification'
-import breadcrumbs from './breadcrumbs'
-import buttons from './buttons'
-import layouts from './layouts'
-import tooltip from './tooltip'
-import drawer from './drawer'
-import inputs from './inputs'
 import badge from './badge'
-import table from './table'
+import buttons from './buttons'
 import card from './card'
 import menu from './menu'
+import modal from './modal'
+import notification from './notification'
 
 export default {
-    ...card,
     ...badge,
-    ...breadcrumbs,
     ...buttons,
-    ...drawer,
-    ...inputs,
-    ...loadingOverlay,
+    ...card,
     ...menu,
-    ...notification,
-    ...ringProgress,
-    ...table,
-    ...tooltip,
-    ...layouts
+    ...modal,
+    ...notification
 }

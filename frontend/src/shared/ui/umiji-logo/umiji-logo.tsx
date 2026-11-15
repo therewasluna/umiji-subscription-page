@@ -15,12 +15,10 @@ export function UmijiLogo({ size = 32, style, ...props }: UmijiLogoProps) {
             xmlns="http://www.w3.org/2000/svg"
             {...props}
         >
-            <path
-                clipRule="evenodd"
-                d="M8 1a.75.75 0 0 1 .75.75v12.5a.75.75 0 0 1-1.5 0V1.75A.75.75 0 0 1 8 1Zm6 2a.75.75 0 0 1 .75.75v8.5a.75.75 0 0 1-1.5 0v-8.5A.75.75 0 0 1 14 3ZM5 4a.75.75 0 0 1 .75.75v6.5a.75.75 0 0 1-1.5 0v-6.5A.75.75 0 0 1 5 4Zm6 1a.75.75 0 0 1 .75.75v4.5a.75.75 0 0 1-1.5 0v-4.5A.75.75 0 0 1 11 5ZM2 6a.75.75 0 0 1 .75.75v2.5a.75.75 0 0 1-1.5 0v-2.5A.75.75 0 0 1 2 6Z"
-                fill="currentColor"
-                fillRule="evenodd"
-            />
+            <g stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.6}>
+                <path d="M1.75 6.25q1.56-2 3.13 0t3.12 0t3.13 0t3.12 0" />
+                <path d="M1.75 10.75q1.56-2 3.13 0t3.12 0t3.13 0t3.12 0" />
+            </g>
         </Box>
     )
 }

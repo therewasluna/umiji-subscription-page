@@ -11,8 +11,10 @@ import { JwtService } from '@nestjs/jwt';
 
 import {
     SubscriptionPageRawConfigSchema,
+    TSubscriptionPageAccentColor,
     TSubscriptionPageRawConfig,
     SUBPAGE_DEFAULT_CONFIG_UUID,
+    SUBSCRIPTION_PAGE_DEFAULT_ACCENT_COLOR,
 } from '@umiji/subscription-page-types';
 
 import { AxiosService } from '@common/axios';
@@ -163,6 +165,18 @@ export class WebpageService implements OnApplicationBootstrap {
         };
     }
 
+    public async getAccentColor(
+        subpageConfigUuid: string | null,
+    ): Promise<TSubscriptionPageAccentColor> {
+        const subpageConfig = await this.getConfig(
+            this.getFinalSubpageConfigUuid(subpageConfigUuid),
+        );
+
+        return (
+            subpageConfig?.brandingSettings.accentColor ?? SUBSCRIPTION_PAGE_DEFAULT_ACCENT_COLOR
+        );
+    }
+
     /**
      * Returns the config, re-reading it from the panel once it is older than CONFIG_TTL_MS. Configs
      * created after startup are fetched on first use. If the panel can't be reached or returns an
@@ -288,7 +302,10 @@ export class WebpageService implements OnApplicationBootstrap {
             const subscriptionData = subscriptionDataResponse.response;
 
             if (!baseSettings.showConnectionKeys) {
-                subscriptionData.response.links = [];
+                // Telegram links stay: this page is the only place users get them.
+                subscriptionData.response.links = subscriptionData.response.links.filter((link) =>
+                    link.startsWith('tg://'),
+                );
                 subscriptionData.response.ssConfLinks = {};
             }
 
@@ -302,6 +319,7 @@ export class WebpageService implements OnApplicationBootstrap {
                 this.indexTemplate({
                     metaTitle: baseSettings.metaTitle,
                     metaDescription: baseSettings.metaDescription,
+                    accentColor: await this.getAccentColor(subpageConfig.subpageConfigUuid),
                     panelData: Buffer.from(JSON.stringify(subscriptionData)).toString('base64'),
                 }),
             );

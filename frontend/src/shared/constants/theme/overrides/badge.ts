@@ -5,6 +5,12 @@ export default {
         defaultProps: {
             radius: 'md',
             variant: 'outline'
+        },
+        styles: {
+            root: {
+                textTransform: 'none',
+                letterSpacing: 0
+            }
         }
     })
 }

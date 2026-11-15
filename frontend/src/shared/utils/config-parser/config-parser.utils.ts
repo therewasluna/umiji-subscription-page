@@ -37,7 +37,11 @@ export function getExpirationTextUtil(
         return getLocalizedText(baseTranslations.indefinitely, currentLang)
     }
 
-    return `${getLocalizedText(baseTranslations.expiresIn, currentLang)} ${expiration.fromNow(false)}`
+    // Older configs end the Persian prefix with "در", which dayjs's Persian text already starts with.
+    return `${getLocalizedText(baseTranslations.expiresIn, currentLang)} ${expiration.fromNow(false)}`.replace(
+        'در در',
+        'در'
+    )
 }
 
 export const formatDate = (

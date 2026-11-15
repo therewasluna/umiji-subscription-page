@@ -3,16 +3,26 @@ import { Combobox, Menu } from '@mantine/core'
 export default {
     Menu: Menu.extend({
         defaultProps: {
-            shadow: 'md',
-            withArrow: true,
-            transitionProps: { transition: 'scale', duration: 200 }
+            shadow: 'lg',
+            withArrow: false,
+            radius: 'md',
+            transitionProps: {
+                transition: 'fade',
+                duration: 180,
+                timingFunction: 'ease-out'
+            },
+            styles: {
+                dropdown: {
+                    backgroundColor: 'var(--mantine-color-dark-6)',
+                    border: '1px solid var(--mantine-color-dark-4)',
+                    boxShadow: '0 8px 32px rgba(0, 0, 0, 0.4), 0 2px 8px rgba(0, 0, 0, 0.2)'
+                }
+            }
         }
     }),
     Combobox: Combobox.extend({
         defaultProps: {
-            shadow: 'md',
-            withArrow: false,
-            transitionProps: { transition: 'scale', duration: 200 }
+            transitionProps: { transition: 'fade', duration: 200 }
         }
     })
 }

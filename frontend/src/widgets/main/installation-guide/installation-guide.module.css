@@ -1,110 +1,113 @@
-.appsGrid {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 8px;
-    margin-bottom: var(--mantine-spacing-md);
-}
-
-.appButton {
-    position: relative;
+.glyph {
     display: flex;
     align-items: center;
-    flex: 1 1 auto;
-    padding: 0 48px 0 16px;
-    height: 48px;
-    min-width: 0;
-    overflow: hidden;
-    background: rgba(255, 255, 255, 0.02);
-    border: 1px solid rgba(255, 255, 255, 0.08);
-    border-left: 3px solid rgba(255, 255, 255, 0.08);
-    border-radius: var(--mantine-radius-md);
-    cursor: pointer;
-    transition: all 0.2s ease;
 }
 
-.appButton:hover {
-    background: rgba(255, 255, 255, 0.05);
-    border-left-color: rgba(255, 255, 255, 0.25);
+.glyph svg {
+    width: 18px;
+    height: 18px;
 }
 
-.appButton:hover .bgIcon {
-    opacity: 0.3;
+/* App tabs, attached to the steps they switch: plain cells on a hairline, the active one underlined
+   like the panel's tabs. Equal widths, so both edges stay on the card's edges. */
+.apps {
+    display: flex;
+    flex-wrap: wrap;
 }
 
-.appButtonActive,
-.appButtonActive:hover {
-    background: linear-gradient(90deg, rgba(34, 211, 238, 0.12) 0%, rgba(34, 211, 238, 0.04) 100%);
-    border-color: rgba(34, 211, 238, 0.2);
-    border-left-color: var(--mantine-color-cyan-5);
-    box-shadow:
-        inset 4px 0 12px -4px rgba(34, 211, 238, 0.3),
-        0 0 12px rgba(34, 211, 238, 0.1);
+.app {
+    position: relative;
+    display: flex;
+    flex: 1 1 84px;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    min-height: 64px;
+    padding: 10px 12px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+    color: var(--mantine-color-dark-1);
+    transition:
+        background-color 150ms ease,
+        color 150ms ease;
+
+    @media (max-width: 48em) {
+        flex-direction: column;
+        gap: 6px;
+        min-height: 72px;
+    }
 }
 
-.appButtonActive .appName {
-    color: var(--mantine-color-cyan-3);
+.app + .app {
+    border-inline-start: 1px solid rgba(255, 255, 255, 0.07);
 }
 
-.appButtonActive .bgIcon,
-.appButtonActive:hover .bgIcon {
-    opacity: 0.25;
+.app:hover {
+    background: rgba(255, 255, 255, 0.03);
+    color: var(--mantine-color-white);
 }
 
-.bgIcon {
+.app[data-active],
+.app[data-active]:hover {
+    background: var(--mantine-primary-color-light);
+    color: var(--mantine-color-white);
+}
+
+.app[data-active]::after {
+    content: '';
     position: absolute;
-    right: -12px;
-    top: 50%;
-    transform: translateY(-50%);
-    width: 56px;
-    height: 56px;
-    opacity: 0.25;
-    pointer-events: none;
-    transition: all 0.3s ease;
-    mask-image: linear-gradient(to right, transparent 0%, black 40%, black 100%);
-    -webkit-mask-image: linear-gradient(to right, transparent 0%, black 40%, black 100%);
+    inset-inline: 0;
+    bottom: -1px;
+    height: 2px;
+    background: var(--mantine-primary-color-4);
 }
 
-.bgIcon svg,
-.bgIcon svg path {
-    width: 100%;
-    height: 100%;
+.appIcon {
+    display: flex;
+    flex-shrink: 0;
+    align-items: center;
 }
 
-.bgIconActive {
-    opacity: 0.25;
-}
-
-.bgIconActive svg,
-.bgIconActive svg path {
-    width: 100%;
-    height: 100%;
+.appIcon svg {
+    width: 22px;
+    height: 22px;
 }
 
 .appName {
-    position: relative;
-    z-index: 1;
-    color: rgba(255, 255, 255, 0.85);
-    font-size: var(--mantine-font-size-md);
+    font-size: var(--mantine-font-size-sm);
     font-weight: 600;
     white-space: nowrap;
 }
 
-.featuredBadge {
+.appFeatured {
     position: absolute;
-    top: 4px;
-    left: 4px;
-    width: 8px;
-    height: 8px;
-    display: inline-block;
-    opacity: 1;
-    z-index: 0;
-    border-radius: 50%;
-    background: #efbf04;
-
-    box-shadow: 0 0 6px rgba(239, 191, 4, 0.6);
+    top: 8px;
+    inset-inline-end: 8px;
+    color: var(--mantine-primary-color-4);
 }
 
-.appButtonActive .featuredBadge {
-    opacity: 0.8;
-    box-shadow: 0 0 8px rgba(239, 191, 4, 0.4);
+/* One equal-width column. Brokers write these labels, so a long one wraps instead of being cut off. */
+.buttons {
+    display: grid;
+    gap: 8px;
+    max-width: 320px;
+
+    @media (max-width: 48em) {
+        max-width: none;
+    }
+}
+
+.button {
+    height: auto;
+    min-height: 42px;
+    padding-block: 8px;
+}
+
+.buttonInner {
+    height: auto;
+}
+
+.buttonLabel {
+    height: auto;
+    line-height: 1.35;
+    white-space: normal;
 }

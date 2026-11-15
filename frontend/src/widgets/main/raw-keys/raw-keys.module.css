@@ -1,43 +1,27 @@
-.modalContent {
-    background: rgba(22, 27, 35, 0.95);
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
-    border: 1px solid rgba(255, 255, 255, 0.1);
+.keys {
+    max-height: 408px;
+    overflow-y: auto;
 }
 
-.modalHeader {
-    background: transparent;
-}
-
-.modalTitle {
-    font-weight: 600;
-    color: white;
-}
-
-.keyBox {
-    background: rgba(255, 255, 255, 0.02);
-    border: 1px solid rgba(255, 255, 255, 0.06);
-    border-radius: var(--mantine-radius-md);
-}
-
-.keyRow {
-    display: grid;
-    grid-template-columns: 1fr auto;
-    align-items: center;
-    gap: var(--mantine-spacing-xs);
-}
-
-.keyInfo {
+/* The same inline padding as the hero and the guide's steps. */
+.key {
     display: flex;
     align-items: center;
-    gap: var(--mantine-spacing-xs);
-    min-width: 0;
-    overflow: hidden;
+    gap: 16px;
+    padding-block: 12px;
+    padding-inline: 32px;
+
+    @media (max-width: 48em) {
+        gap: 12px;
+        padding-inline: 20px;
+    }
+}
+
+.key + .key {
+    border-top: 1px solid rgba(255, 255, 255, 0.07);
 }
 
 .keyName {
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
+    flex: 1;
     min-width: 0;
 }

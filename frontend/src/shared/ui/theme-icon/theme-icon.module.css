@@ -1,0 +1,9 @@
+.glyph {
+    display: flex;
+    align-items: center;
+}
+
+.glyph svg {
+    width: 20px;
+    height: 20px;
+}

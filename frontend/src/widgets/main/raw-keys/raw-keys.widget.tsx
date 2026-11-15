@@ -1,23 +1,22 @@
 import {
     ActionIcon,
     Badge,
-    Box,
     Card,
     CopyButton,
     Group,
-    Image,
-    ScrollArea,
     Stack,
     Text,
+    ThemeIcon,
     Title
 } from '@mantine/core'
-import { IconCheck, IconCopy, IconKey, IconQrcode } from '@tabler/icons-react'
 import { modals } from '@mantine/modals'
-import { renderSVG } from 'uqr'
+import { IconBrandTelegram, IconCheck, IconCopy, IconKey, IconQrcode } from '@tabler/icons-react'
+
+import { useTranslation } from '@shared/hooks'
+import { QrPlateShared } from '@shared/ui'
+import { vibrate } from '@shared/utils/vibrate'
 
 import { useSubscription } from '@entities/subscription-info-store'
-import { vibrate } from '@shared/utils/vibrate'
-import { useTranslation } from '@shared/hooks'
 
 import classes from './raw-keys.module.css'
 
@@ -28,6 +27,14 @@ interface ParsedLink {
 
 const parseLinks = (links: string[]): ParsedLink[] => {
     return links.map((link) => {
+        // Telegram links carry their name in a parameter, because # would break them.
+        if (link.startsWith('tg://')) {
+            return {
+                name: new URLSearchParams(link.split('?')[1]).get('remark') || 'Telegram',
+                fullLink: link
+            }
+        }
+
         const hashIndex = link.lastIndexOf('#')
         let name = 'Unknown'
 
@@ -47,11 +54,7 @@ const parseLinks = (links: string[]): ParsedLink[] => {
     })
 }
 
-interface IProps {
-    isMobile: boolean
-}
-
-export const RawKeysWidget = ({ isMobile }: IProps) => {
+export const RawKeysWidget = () => {
     const { t, baseTranslations } = useTranslation()
     const subscription = useSubscription()
 
@@ -60,25 +63,11 @@ export const RawKeysWidget = ({ isMobile }: IProps) => {
     const parsedLinks = parseLinks(subscription.links)
 
     const handleShowQr = (link: ParsedLink) => {
-        const qrCode = renderSVG(link.fullLink, {
-            whiteColor: '#161B22',
-            blackColor: '#22d3ee'
-        })
-
         modals.open({
-            centered: true,
             title: link.name,
-            classNames: {
-                content: classes.modalContent,
-                header: classes.modalHeader,
-                title: classes.modalTitle
-            },
             children: (
-                <Stack align="center">
-                    <Image
-                        src={`data:image/svg+xml;utf8,${encodeURIComponent(qrCode)}`}
-                        style={{ borderRadius: 'var(--mantine-radius-md)' }}
-                    />
+                <Stack align="center" gap="lg">
+                    <QrPlateShared value={link.fullLink} />
                     <Text c="dimmed" size="sm" ta="center">
                         {t(baseTranslations.scanToImport)}
                     </Text>
@@ -88,83 +77,95 @@ export const RawKeysWidget = ({ isMobile }: IProps) => {
     }
 
     return (
-        <Card p={{ base: 'sm', xs: 'md', sm: 'lg', md: 'xl' }} radius="lg">
-            <Stack gap="md">
-                <Group gap="sm" justify="space-between">
-                    <Title c="white" fw={600} order={4}>
-                        {t(baseTranslations.connectionKeysHeader)}
-                    </Title>
-                    {parsedLinks.length > 1 && (
-                        <Badge color="cyan" size="lg" variant="light">
-                            {parsedLinks.length}
-                        </Badge>
-                    )}
-                </Group>
+        <section>
+            <Group gap="sm" mb="md">
+                <Title c="white" fw={600} fz={20} order={2}>
+                    {t(baseTranslations.connectionKeysHeader)}
+                </Title>
+                {parsedLinks.length > 1 && (
+                    <Badge color="gray" size="lg" variant="soft">
+                        {parsedLinks.length}
+                    </Badge>
+                )}
+            </Group>
 
-                <ScrollArea.Autosize mah={300} scrollbars="y">
-                    <Stack gap="xs">
-                        {parsedLinks.map((link, index) => (
-                            <Box className={classes.keyBox} key={index} p="xs">
-                                <Box className={classes.keyRow}>
-                                    <Box className={classes.keyInfo}>
-                                        <IconKey
-                                            size={isMobile ? 16 : 18}
-                                            style={{
-                                                color: 'var(--mantine-color-cyan-4)',
-                                                flexShrink: 0
-                                            }}
-                                        />
-                                        <Box className={classes.keyName}>
-                                            <Text
-                                                c="white"
-                                                fw={500}
-                                                size={isMobile ? 'xs' : 'sm'}
-                                                span
-                                            >
-                                                {link.name}
-                                            </Text>
-                                        </Box>
-                                    </Box>
+            <Card padding={0}>
+                <div className={classes.keys}>
+                    {parsedLinks.map((link, index) => {
+                        const isTelegram = link.fullLink.startsWith('tg://')
+                        const Icon = isTelegram ? IconBrandTelegram : IconKey
 
-                                    <Group gap={4} wrap="nowrap">
-                                        <CopyButton value={link.fullLink}>
-                                            {({ copied, copy }) => (
-                                                <ActionIcon
-                                                    color={copied ? 'teal' : 'gray'}
-                                                    onClick={() => {
-                                                        vibrate('drop')
-                                                        copy()
-                                                    }}
-                                                    size={isMobile ? 'sm' : 'md'}
-                                                    variant="subtle"
-                                                >
-                                                    {copied ? (
-                                                        <IconCheck size={isMobile ? 14 : 16} />
-                                                    ) : (
-                                                        <IconCopy size={isMobile ? 14 : 16} />
-                                                    )}
-                                                </ActionIcon>
-                                            )}
-                                        </CopyButton>
+                        return (
+                            <div className={classes.key} key={index}>
+                                <ThemeIcon
+                                    radius="md"
+                                    size={40}
+                                    style={{
+                                        color: 'var(--mantine-primary-color-4)',
+                                        flexShrink: 0
+                                    }}
+                                    variant="soft"
+                                >
+                                    <Icon size={20} />
+                                </ThemeIcon>
+                                <Text
+                                    c="white"
+                                    className={classes.keyName}
+                                    fw={500}
+                                    size="sm"
+                                    truncate
+                                >
+                                    {link.name}
+                                </Text>
 
+                                <Group gap={6} wrap="nowrap">
+                                    {isTelegram && (
                                         <ActionIcon
-                                            color="cyan"
-                                            onClick={() => {
-                                                vibrate('tap')
-                                                handleShowQr(link)
-                                            }}
-                                            size={isMobile ? 'sm' : 'md'}
-                                            variant="subtle"
+                                            aria-label="Open in Telegram"
+                                            component="a"
+                                            href={link.fullLink}
+                                            onClick={() => vibrate('tap')}
+                                            size="lg"
+                                            variant="light"
                                         >
-                                            <IconQrcode size={isMobile ? 14 : 16} />
+                                            <IconBrandTelegram size={18} />
                                         </ActionIcon>
-                                    </Group>
-                                </Box>
-                            </Box>
-                        ))}
-                    </Stack>
-                </ScrollArea.Autosize>
-            </Stack>
-        </Card>
+                                    )}
+                                    <CopyButton value={link.fullLink}>
+                                        {({ copied, copy }) => (
+                                            <ActionIcon
+                                                aria-label={t(baseTranslations.copyLink)}
+                                                color={copied ? 'teal' : 'gray'}
+                                                onClick={() => {
+                                                    vibrate('drop')
+                                                    copy()
+                                                }}
+                                                size="lg"
+                                            >
+                                                {copied ? (
+                                                    <IconCheck size={18} />
+                                                ) : (
+                                                    <IconCopy size={18} />
+                                                )}
+                                            </ActionIcon>
+                                        )}
+                                    </CopyButton>
+                                    <ActionIcon
+                                        aria-label={t(baseTranslations.scanToImport)}
+                                        onClick={() => {
+                                            vibrate('tap')
+                                            handleShowQr(link)
+                                        }}
+                                        size="lg"
+                                    >
+                                        <IconQrcode size={18} />
+                                    </ActionIcon>
+                                </Group>
+                            </div>
+                        )
+                    })}
+                </div>
+            </Card>
+        </section>
     )
 }
