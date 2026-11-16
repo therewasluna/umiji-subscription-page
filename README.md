@@ -3,8 +3,9 @@
 The page your users open from their subscription link in [Umiji](https://github.com/therewasluna/umiji). It shows
 their usage and how to set up their apps, and serves the subscription itself.
 
-Deploy it with the panel's deploy kit (`tools/deploy.sh` in [umiji-backend](https://github.com/therewasluna/umiji-backend),
-see its `DEPLOY.md`). To only build the image (needs Docker and Node 24+): `./tools/build-image.sh`.
+It runs from `ghcr.io/therewasluna/umiji-subscription-page`, built by GitHub Actions on every push to `main`. To install
+it with Docker, on the panel's server or its own, see [DEPLOY.md](DEPLOY.md). To build the image yourself (needs Docker
+and Node 24+): `./tools/build-image.sh`.
 
 Leave `SUBPAGE_CONFIG_UUID` unset (or at the all-zero default): if it points at one config, every user gets that
 page and brokers' pages are never used.

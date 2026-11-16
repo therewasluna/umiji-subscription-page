@@ -1,0 +1,56 @@
+# Umiji sub page, with Caddy for HTTPS. On the panel's own server Caddy stays off (COMPOSE_PROFILES= in
+# .env): the panel's Caddy serves the sub page there. Settings are in .env. See DEPLOY.md.
+name: umiji-sub
+
+services:
+  umiji-subscription-page:
+    image: ghcr.io/therewasluna/umiji-subscription-page:latest
+    container_name: umiji-subscription-page
+    hostname: umiji-subscription-page
+    restart: always
+    env_file: .env
+    ports:
+      - 127.0.0.1:3010:3010
+    networks:
+      - umiji-network
+    logging: &logging
+      driver: json-file
+      options:
+        max-size: 100m
+        max-file: 5
+
+  # Built-in HTTPS (the caddy profile): gets and renews the certificate itself.
+  # It reads SUB_DOMAIN from .env. After editing caddy/Caddyfile: docker compose restart umiji-sub-caddy
+  umiji-sub-caddy:
+    image: caddy:2.10.2
+    profiles: [caddy]
+    container_name: umiji-sub-caddy
+    hostname: umiji-sub-caddy
+    restart: always
+    environment:
+      SUB_DOMAIN: ${SUB_DOMAIN:?Put your sub page domain in SUB_DOMAIN in .env}
+    ports:
+      - 80:80
+      - 443:443
+      - 443:443/udp
+    volumes:
+      - ./caddy:/etc/caddy:ro
+      - umiji-sub-caddy-data:/data
+      - umiji-sub-caddy-config:/config
+    networks:
+      - umiji-network
+    logging: *logging
+
+networks:
+  # The panel's network name: on the panel's server the sub page joins it, so the two reach each other
+  # by name. Docker then warns the network already exists; that's expected.
+  umiji-network:
+    name: umiji-network
+    driver: bridge
+
+volumes:
+  # Caddy's certificate and key. Keep it: Let's Encrypt limits how often a domain can get a new one.
+  umiji-sub-caddy-data:
+    name: umiji-sub-caddy-data
+  umiji-sub-caddy-config:
+    name: umiji-sub-caddy-config

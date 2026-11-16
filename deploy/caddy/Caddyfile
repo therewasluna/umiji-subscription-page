@@ -1,0 +1,18 @@
+# Built-in HTTPS for the sub page. It takes SUB_DOMAIN from .env, so most installs never edit this file.
+# After an edit: docker compose restart umiji-sub-caddy
+
+# Only with a CDN in front of the domain (e.g. Cloudflare's orange cloud): remove the # from these six
+# lines and list the CDN's IP ranges (https://www.cloudflare.com/ips/), so Caddy takes the visitor's IP
+# from the CDN. Strict reads X-Forwarded-For from the right, so an entry the visitor wrote is never used.
+#{
+#	servers {
+#		trusted_proxies static 173.245.48.0/20 103.21.244.0/22 2400:cb00::/32
+#		trusted_proxies_strict
+#	}
+#}
+
+{$SUB_DOMAIN} {
+	reverse_proxy umiji-subscription-page:3010 {
+		header_up X-Forwarded-For {client_ip}
+	}
+}
