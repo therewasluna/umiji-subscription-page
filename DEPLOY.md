@@ -4,11 +4,26 @@ The sub page is what your users open from their subscription link: their usage, 
 subscription itself. It has its own install, in `/opt/umiji-sub`, either on the panel's server or on a server of its
 own. Everything runs in Docker; every command here runs on the server that will run the sub page.
 
+## The quick way: the installer
+
+The installer sets up the panel and the sub page together. On a server of its own, with an API token from the panel
+(step 1 below), run it as root with `sub` at the end:
+
+```bash
+bash <(curl -fsSL https://raw.githubusercontent.com/therewasluna/umiji/main/install.sh) sub
+```
+
+It installs Docker if it's missing, asks for the sub page's domain, the panel's domain and the token, and checks the
+token against the panel. At the end it prints the commands to run on the panel's server, the same ones as step 4.
+It also adds the `umiji` command: type `umiji` on that server later to update the sub page or uninstall it. The
+rest of this guide does the same by hand.
+
 ## 1. Before you start
 
 - **The panel is installed**: [umiji-backend: DEPLOY.md](https://github.com/therewasluna/umiji-backend/blob/main/DEPLOY.md).
 - **The sub page's domain** (`SUB_DOMAIN` in the panel's `.env`) points at the server that will run it.
-- **An API token**: in the panel, **Umiji Settings → API Tokens → Create**. Copy it.
+- **An API token**: in the panel, **Umiji Settings → API Tokens → Create API token**, pick the **Subpage** preset and
+  press **Create**. Copy it: it's shown only once.
 - **Docker**, on its own server: `curl -fsSL https://get.docker.com | sh`. The panel's server already has it.
 
 ## 2. Get the files
@@ -20,6 +35,11 @@ curl -fsSL -o docker-compose.yml $base/docker-compose.yml
 curl -fsSL -o caddy/Caddyfile    $base/caddy/Caddyfile
 curl -fsSL -o .env               $base/env.example
 chmod 600 .env
+```
+
+Then open the settings file:
+
+```bash
 nano .env
 ```
 
