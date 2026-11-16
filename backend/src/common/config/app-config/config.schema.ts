@@ -74,6 +74,9 @@ export const configSchema = z
         MARZBAN_LEGACY_SECRET_KEY: z.optional(z.string()),
         MARZBAN_LEGACY_SUBSCRIPTION_VALID_FROM: z.optional(z.string()),
         MARZBAN_LEGACY_DROP_REVOKED_SUBSCRIPTIONS: booleanString(),
+        // First path segments of other panels' links besides sub, json and clash, comma-separated, each
+        // "path" or "path:type" (json, mihomo, singbox...), e.g. a 3x-ui install's random sub paths.
+        LEGACY_SUB_PATHS: z.optional(z.string()),
         INTERNAL_JWT_SECRET: z.string(),
         EGAMES_COOKIE: z.optional(z.string()),
     })

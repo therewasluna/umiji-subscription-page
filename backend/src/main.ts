@@ -23,6 +23,7 @@ import {
     proxyCheckMiddleware,
     checkAssetsCookieMiddleware,
     getRealIp,
+    legacyLinksMiddleware,
 } from '@common/middlewares';
 import { customLogFilter } from '@common/utils/filter-logs/filter-logs';
 import { getAssetsPath, isDevelopment, isDevOrDebugLogsEnabled } from '@common/utils/startup-app';
@@ -117,6 +118,12 @@ async function bootstrap(): Promise<void> {
     );
 
     const customSubPrefix = config.get('CUSTOM_SUB_PREFIX');
+
+    // Before routing, so links from the panel a user moved from reach the same routes.
+    const legacyPaths = (config.get('LEGACY_SUB_PATHS') ?? '')
+        .split(',')
+        .map((p) => p.trim().replace(/^\/+|\/+(?=:|$)/g, ''));
+    app.use(legacyLinksMiddleware(customSubPrefix || undefined, legacyPaths.filter(Boolean)));
 
     app.setGlobalPrefix(customSubPrefix ?? '', { exclude: [APP_CONFIG_ROUTE_WO_LEADING_PATH] });
 

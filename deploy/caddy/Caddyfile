@@ -16,3 +16,7 @@
 		header_up X-Forwarded-For {client_ip}
 	}
 }
+
+# Subscription links from panels users moved from: umiji → Migrate writes one
+# legacy-sub-<domain>.caddy here per old domain. With no such file this line does nothing.
+import legacy-sub*.caddy
