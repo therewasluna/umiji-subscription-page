@@ -1,0 +1,15 @@
+# Posts each push to main to the Telegram channel @umijidev. The workflow itself lives in
+# therewasluna/umiji (.github/workflows/telegram-post.yml); "[skip tg]" in a commit message leaves it out.
+name: Telegram
+
+on:
+  push:
+    branches: [main]
+
+permissions: {}
+
+jobs:
+  post:
+    uses: therewasluna/umiji/.github/workflows/telegram-post.yml@main
+    secrets:
+      TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
